@@ -102,7 +102,7 @@ Computational
 ### Presentations and Publications
 
 #### Posters
--**Gupta, A.**, Unckless, R.L. Evolution of two distinct meiotic drive X chromosomes in D. affinis. KU Center for Genomics symposium, University of Kansas. Lawrence, KS. May 2024. Poster presentation. 
+- **Gupta, A.**, Unckless, R.L. Evolution of two distinct meiotic drive X chromosomes in D. affinis. KU Center for Genomics symposium, University of Kansas. Lawrence, KS. May 2024. Poster presentation. 
 - **Gupta, A.**, Svensson, E.I., Frietsch, H. and Tsuboi, M. Natural and sexual selection on the morphology Ischnura elegans and Enallagma cyathigerum. IISER, Mohali, April 2022. Poster presentation.
 - **Gupta, A.**, Prasad, N.G. Evolution of metabolic pathways in response to selection for larval crowding in populations of Drosophila melanogaster. Indian Society of Evolutionary Biologists (ISEB) conference. Jawaharlal Nehru Institute for Advanced Scientific Research (JNCASR), Bangalore. October 2019. Poster presentation.
 
