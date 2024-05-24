@@ -6,7 +6,7 @@ category: [ Computational Pipelines ]
 tags: [ Sliding window trees, Comparative genomics, SNP calling, GATK ]
 ---
 
-## **Calling SNPs using GATK**
+
 
 To call SNPs on my *D. affinis* ST, SR1, SR2 and other related species with only one sample per species, so far I used -
 
@@ -14,6 +14,8 @@ To call SNPs on my *D. affinis* ST, SR1, SR2 and other related species with only
 2. Freebayes - Pipeline is very sensitive and captures all variation but the vcf files produced by freebayes are weird because when I try to convert them to phylip alignments, it somehow only shows up to be a single sample only no matter how many samples I have in my vcf's
 
 So now I'm moving to GATK to call SNPs, Fingers crossed this works!
+
+## **Calling SNPs using GATK**
 
 Using GATK -
 
