@@ -1,0 +1,36 @@
+---
+title: "PCA on GATK_vcf for D. affinis PopGen data - Part 2"
+author: "Anjali Gupta"
+date: '2024-06-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Credits
+
+This code has been written using examples from two online sources - by Madison Dougherty <https://rpubs.com/madisondougherty/980777> and by Tiffany Orris <https://rpubs.com/torris459/981399>.
+
+## Data Analysis
+
+### Set your working directory
+
+Set your working directory to the folder where your dataset is present
+
+```{r message=FALSE, warning=FALSE}
+setwd("/Users/a948g501/Documents/GitHub/AG_Unckless_Open_Lab_Notebook/rscripts")
+```
+
+### Install and load packages
+
+If one or more packages is not already installed for you, you can install it using ```install.packages("PackageName")```
+
+```{r message=FALSE, warning=FALSE}
+# Load required libraries
+library(vcfR)
+library(vegan)
+library(ggplot2)
+library(ggpubr)
+```

@@ -1,0 +1,231 @@
+---
+title: "PCA on GATK_vcf for D. affinis PopGen data"
+author: "Anjali Gupta"
+date: '2024-06-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Credits
+
+This code has been written using examples from two online sources - by Madison Dougherty <https://rpubs.com/madisondougherty/980777> and by Tiffany Orris <https://rpubs.com/torris459/981399>.
+
+## Data Preparation
+
+### Set your working directory
+
+Set your working directory to the folder where your dataset is present
+
+```{r message=FALSE, warning=FALSE}
+setwd("/Users/a948g501/Documents/GitHub/AG_Unckless_Open_Lab_Notebook/rscripts")
+```
+
+### Install and load packages
+
+If one or more packages is not already installed for you, you can install it using ```install.packages("PackageName")```
+
+```{r message=FALSE, warning=FALSE}
+# Load required libraries
+library(vcfR)
+library(vegan)
+library(ggplot2)
+library(ggpubr)
+```
+
+### Load in the SNP data
+
+We need to read in the `.vcf` file here in order to be able to work with the data. Here, we assign the data to an object called `snps`, which is a vcfR object. This step is also important because after we run this line of code, the output that is printed tells us whether the data properly uploaded. The last line should say `"All variants processed"` and the second to last line should say `"Processed Variant: …"`, which tells us the amount of SNPs in our data.
+
+```{r message=FALSE, warning=FALSE}
+snps <- vcfR::read.vcfR("/Users/a948g501/Documents/GitHub/AG_Unckless_Open_Lab_Notebook/datafiles/filtered_SNPs_GATK_PopGen_ChrX_haploid.vcf", 
+                        convertNA  = TRUE)
+```
+
+### Extracting the Genotype Data from the `.vcf` File
+
+Since `.vcf` files have a lot information included that isn’t necessary for our analysis, we need to extract the genotype data that we plan to use and convert it into a form that we can easily use in R. So, here, we extract the character data containing the genotypes, and convert it into numeric scores that we can later use in our analysis using the function `vcfR::extract.gt()` and the arguments as follows.
+
+```{r message=FALSE, warning=FALSE}
+snps_num <- vcfR::extract.gt(snps, 
+           element = "GT",
+           IDtoRowNames  = F,
+           convertNA = T,
+           return.alleles = F)
+```
+
+### Rotating the Genotype Scores into Numeric Data
+
+`.vcf` data is automatically formatted with SNPs in columns and samples in rows. Our matrix containing the the genotype scores called `snps_num` is formatted this way, so we need to transpose the data in order to perform our analysis. We do this here by using the function `t()` and then assigning the output to a new matrix called `snps_num_t`.
+
+```{r message=FALSE, warning=FALSE}
+snps_num_t <- t(snps_num)
+```
+
+Here we convert the matrix to a data frame so that we can perform the appropriate functions on the data and make the plots necessary for analysis.
+
+```{r message=FALSE, warning=FALSE}
+snps_num_df <- data.frame(snps_num_t) 
+```
+
+### Remove NAs
+
+In this step we create a function called `find_NAs()` that will tell us how many NAs are in our data frame of SNPs and print the index value of where an NA is located. When using the function, you input the row number you want to search for NAs in using bracket notation, and the function will print the indices where NAs were found within that row.
+
+```{r message=FALSE, warning=FALSE}
+find_NAs <- function(x){
+  NAs_TF <- is.na(x)
+  i_NA <- which(NAs_TF == TRUE)
+  N_NA <- length(i_NA)
+  
+  cat("Results:",N_NA, "NAs present\n.")
+  return(i_NA)
+}
+```
+
+In this process, we use a `for()` loop to go through every row of the data frame and search each row individually for NAs using the `find_NAs` function. The output will contain each row’s number of NAs.
+
+```{r message=FALSE, warning=FALSE}
+# N_rows
+# number of rows (individuals)
+N_rows <- nrow(snps_num_t)
+
+# N_NA
+# vector to hold output (number of NAs)
+N_NA   <- rep(x = 0, times = N_rows)
+
+# N_SNPs
+# total number of columns (SNPs)
+N_SNPs <- ncol(snps_num_t)
+
+# the for() loop
+for(i in 1:N_rows){
+  
+  # for each row, find the location of
+  ## NAs with snps_num_t()
+  i_NA <- find_NAs(snps_num_t[i,]) 
+  
+  # then determine how many NAs
+  ## with length()
+  N_NA_i <- length(i_NA)
+  
+  # then save the output to 
+  ## our storage vector
+  N_NA[i] <- N_NA_i
+}
+```
+
+Here, we first created an object containing the number equal to 50% of the total number of columns. Then, we create a histogram demonstrating the variation in the amount of NAs found in each row of the data frame. From the graph, we see that the majority of rows had less than 400,000 NAs, but there were still some rows that had as much as 1,400,000 NAs. We then added a line for the value stored in the object cutoff50, which shows us how many of the columns were not included in the final analysis of the data.
+
+```{r message=FALSE, warning=FALSE}
+# 50% of N_SNPs
+cutoff50 <- N_SNPs*0.5
+
+hist(N_NA)            
+abline(v = cutoff50, 
+       col = 2, 
+       lwd = 2, 
+       lty = 2)
+```
+Here, we determined how many NAs are in each row and we created an object that only contains the rows that had less than 50% of the data as NAs.
+
+```{r message=FALSE, warning=FALSE}
+percent_NA <- N_NA/N_SNPs*100
+
+# Call which() on percent_NA
+i_NA_50percent <- which(percent_NA > 50) 
+
+snps_num_t02 <- snps_num_t[-i_NA_50percent, ]
+```
+
+### Make a key of the sample names
+
+Here, we make a key of the sample names.
+
+```{r message=FALSE, warning=FALSE}
+row_names <- row.names(snps_num_t02) # Key
+
+row_names02 <- gsub("sample_","",row_names)
+
+pop_id <- gsub("^([ATCG]*)(_)(.*)",
+                  "\\3",
+                  row_names02)
+table(pop_id)  
+```
+### Removing Invariant Columns
+
+Here, we created the function `invar_omit()` , which removes the columns that are considered invariant from the data frame that we want to analyze. Invariant columns contain data that does not have any variance, and thus, is unnecessary to include in our analysis because it does not provide any useful information. The function we created here removes the invariant columns and then prints an output showing how many columns were removed. After creating the function, we used it on our data frame and created the new data frame, that now contains no invariant columns, `snps_no_invar`.
+
+```{r warning=FALSE}
+invar_omit <- function(x){
+  cat("Dataframe of dim",dim(x), "processed...\n")
+  sds <- apply(x, 2, sd, na.rm = TRUE)
+  i_var0 <- which(sds == 0)
+ 
+  
+  cat(length(i_var0),"columns removed\n")
+  
+  if(length(i_var0) > 0){
+     x <- x[, -i_var0]
+  }
+  
+  ## add return()  with x in it
+  return(x)                      
+}
+
+
+snps_no_invar <- invar_omit(snps_num_t02) 
+```
+
+### Remove Invariant Columns
+
+First, we replaced our data frame `snps_noNAs` with the data frame that doesn’t contain invariant columns that we created in the last step. Then we used a `for()` loop to complete mean imputation on our data frame to replace all of the remaining NAs in each column with the mean of each column, which we calculated using `mean()`. In that function, we used the argument `na.rm = TRUE` to ensure that the mean could be calculated while ignoring the NAs in the column.
+
+```{r message=FALSE, warning=FALSE}
+snps_noNAs <- snps_no_invar
+
+N_col <- ncol(snps_no_invar)
+for(i in 1:N_col){
+  
+  # get the current column
+  column_i <- snps_noNAs[, i]
+  
+  # get the mean of the current column
+  mean_i <- mean(column_i, na.rm = TRUE)
+  
+  # get the NAs in the current column
+  NAs_i <- which(is.na(column_i))
+  
+  # record the number of NAs
+  N_NAs <- length(NAs_i)
+
+  # replace the NAs in the current column
+  column_i[NAs_i] <- mean_i
+  
+  # replace the original column with the
+  ## updated columns
+  snps_noNAs[, i] <- column_i
+  
+}
+```
+
+### Save the data
+
+Save the data as a .csv file which can be loaded again later.
+
+```{r message=FALSE, warning=FALSE}
+write.csv(snps_noNAs, file = "ChrX_PopGenDaff_SNPs_cleaned.csv",
+          row.names = F)
+```
+
+Check for the presence of the file with list.files()
+
+```{r warning=FALSE}
+list.files(pattern = ".csv")
+```
+
+### Next steps:
+
+In Part 2, we will re-load the SNPs_cleaned.csv file and carry an an analysis with PCA.
