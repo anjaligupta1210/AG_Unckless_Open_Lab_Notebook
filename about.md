@@ -108,6 +108,7 @@ Computational
 
 
 #### Talks
+- **Gupta, A.**, Unckless, R.L. Evolution of two meiotic driving X chromosomes in *Drosophila affinis*. Evolution 2024 conference, Society for the Study of Evolution (SSE). Montreal, Canada. July 2024. Oral presentation. 
 - **Gupta, A.**, Unckless, R.L. Can autosomal suppressors of meiotic drive prevent cycling of sex chromosomes? Evolution 2023 conference, Society for the Study of Evolution (SSE). Albuquerque, NM. June 2023. Oral presentation. 
 
 
