@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Comparative Phylogenetic Anlaysis Full Script
+title: Comparative Phylogenetic Analysis Full Script
 date: 01 August 2024   
 category: [ Computational Pipelines ]
 tags: [ GATK, Sliding window trees, SNP calling ]
