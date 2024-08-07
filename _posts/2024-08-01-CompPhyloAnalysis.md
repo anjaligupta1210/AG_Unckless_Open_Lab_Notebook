@@ -179,6 +179,7 @@ quick things:
 
 GATK is slow and will take a long time to run
 
+```python
 ## load required modules
 ml gatk
 
@@ -216,6 +217,7 @@ gatk HaplotypeCaller \
      --add-output-vcf-command-line true \
      -ploidy 2 \
      -XL ChrX_MullerAD
+```
 
 ## 4. Filtering SNPs from the GATK output using bcftools
 
