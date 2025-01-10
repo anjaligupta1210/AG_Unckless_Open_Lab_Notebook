@@ -88,7 +88,7 @@ Computational
 
 |Year|Award|Amount|Affiliation|
 |--|--|--|--|
-|2025|osemary Grant Advanced Award|3500 USD|Society for the Study of Evolution|
+|2025|Rosemary Grant Advanced Award|3500 USD|Society for the Study of Evolution|
 |2025|Byron Alexander Memorial Fund (Entomology Endowment Travel Award)|1850 USD|University of Kansas|
 |2024|EEB Entomology Endowment Travel Award|1800 USD|University of Kansas|
 |2024|The Ida H. Hyde Research Scholarship|3000 USD|University of Kansas|
